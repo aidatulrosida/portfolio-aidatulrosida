@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome | Aidatul Rosida Portfolio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --dark-blue: #1e3a8a;
+            --bg-light: #f8fafc;
+            --text-main: #334155;
+            --white: #ffffff;
+            --shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg-light);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* NAVIGATION - Ukuran dikecilkan */
+        nav {
+            background: rgba(30, 58, 138, 0.98);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 8px 5%; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav h3 { font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase; }
+        
+        .nav-container { position: relative; }
+        
+        .menu-dots {
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.3s;
+            padding: 5px 10px;
+        }
+
+        .nav-links { 
+            list-style: none; 
+            display: none; 
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--dark-blue);
+            flex-direction: column;
+            padding: 10px;
+            border-radius: 12px;
+            min-width: 180px;
+            gap: 5px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .nav-links.active { display: flex; }
+        
+        .nav-links li a { 
+            color: white; 
+            text-decoration: none; 
+            font-size: 15px; 
+            font-weight: 500; 
+            transition: 0.3s;
+            display: block;
+            padding: 12px 15px;
+            border-radius: 8px;
+        }
+        
+        .nav-links li a:hover { background: rgba(255,255,255,0.1); color: #93c5fd; }
+
+        /* HERO SECTION */
+        .hero {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            color: white;
+            text-align: center;
+            padding: 140px 20px 80px;
+            clip-path: polygon(0 0, 100% 0, 100% 95%, 0% 100%);
+        }
+
+        .hero img.profile {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            border: 4px solid rgba(255,255,255,0.2);
+            margin-bottom: 20px;
+            object-fit: cover;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .hero h1 { font-size: clamp(1.8rem, 7vw, 2.8rem); font-weight: 800; margin-bottom: 12px; line-height: 1.2; }
+        .hero p { font-size: 1rem; opacity: 0.9; margin-bottom: 30px; max-width: 600px; margin: auto; padding: 0 10px; }
+
+        /* BUTTONS */
+        .cta-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+        .btn { padding: 12px 24px; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; cursor: pointer; border: none; }
+        .btn-primary { background: var(--white); color: var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .btn-outline { border: 2px solid var(--white); color: var(--white); background: transparent; }
+        
+        @media (max-width: 480px) {
+            .cta-buttons { flex-direction: column; width: 100%; max-width: 260px; margin: auto; }
+            .btn { justify-content: center; width: 100%; }
+        }
+
+        /* OVERLAYS */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-light);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 70px 5% 40px;
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .overlay.active {
+            display: block;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .close-overlay {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            z-index: 2100;
+            background: var(--primary);
+            padding: 8px 18px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        /* IMAGE LIGHTBOX FRAME */
+        #image-viewer {
+            display: none;
+            position: fixed;
+            z-index: 3000;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+        }
+        #image-viewer img {
+            max-width: 90%;
+            max-height: 80%;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
+        #image-viewer .close-viewer {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .cv-container { max-width: 800px; margin: 10px auto; text-align: center; }
+        .cv-image { width: 100%; box-shadow: 0 10px 40px rgba(0,0,0,0.2); border-radius: 10px; }
+
+        .overlay-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 1100px;
+            margin: 30px auto;
+        }
+
+        .overlay-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-img { width: 100%; height: 200px; overflow: hidden; background: #eee; cursor: pointer; position: relative; }
+        .card-img img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
+        .card-img:hover img { transform: scale(1.05); filter: brightness(0.8); }
+        .card-img::after { content: '\f067'; font-family: 'Font Awesome 5 Free'; font-weight: 900; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 24px; opacity: 0; transition: 0.3s; }
+        .card-img:hover::after { opacity: 1; }
+
+        .card-body { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .card-body h4 { color: var(--dark-blue); font-size: 1.1rem; margin-bottom: 10px; text-transform: uppercase; }
+        .card-body p { color: #64748b; font-size: 0.9rem; margin-bottom: 15px; flex-grow: 1; }
+        
+        .btn-full { background: var(--primary); color: white; width: 100%; justify-content: center; padding: 12px; border-radius: 12px; font-size: 13px; margin-top: 8px; }
+
+        /* CONTENT SECTIONS */
+        .container { width: 92%; max-width: 1100px; margin: auto; }
+        .section { padding: 50px 0; }
+        .section h2 { color: var(--dark-blue); font-size: 1.7rem; text-align: center; margin-bottom: 30px; }
+        .section h2::after { content: ''; display: block; width: 40px; height: 4px; background: var(--primary); margin: 8px auto; border-radius: 5px; }
+        
+        .card { background: var(--white); padding: 25px; border-radius: 20px; box-shadow: var(--shadow); margin-bottom: 25px; }
+
+        .skills-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 768px) { .skills-grid { grid-template-columns: 1fr 1fr; } }
+
+        .tag-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+        .tag { background: #eff6ff; color: var(--primary); padding: 6px 12px; border-radius: 50px; font-size: 11px; font-weight: 600; }
+        .tag-dark { background: #1e3a8a; color: white; }
+
+        .exp-item { margin-bottom: 30px; padding-left: 20px; border-left: 3px solid #e2e8f0; position: relative; }
+        .exp-item::before { content: ''; position: absolute; left: -10px; top: 0; width: 17px; height: 17px; background: var(--primary); border-radius: 50%; border: 3px solid white; }
+        .exp-item h4 { color: var(--dark-blue); font-size: 1.1rem; }
+        .exp-location { font-size: 0.9rem; color: var(--primary); font-weight: 600; display: block; margin: 4px 0; }
+        .exp-item ul { margin-top: 8px; margin-left: 15px; color: #475569; font-size: 0.95rem; }
+
+        .social { background: var(--dark-blue); color: white; padding: 50px 20px; text-align: center; border-radius: 25px; margin: 40px 0; }
+        .social h2 { color: white; font-size: 1.5rem; margin-bottom: 20px; }
+        .social h2::after { background: white; }
+        .social-icons { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-top: 25px; }
+        .social-icons a { width: 45px; height: 45px; background: rgba(255,255,255,0.1); color: white; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 20px; transition: 0.3s; text-decoration: none; }
+
+        footer { text-align: center; padding: 40px 20px; font-size: 13px; color: #94a3b8; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <h3>Welcome</h3>
+        <div class="nav-container">
+            <div class="menu-dots" onclick="toggleMobileMenu(event)">
+                <i class="fas fa-ellipsis-v"></i>
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#about" onclick="toggleMobileMenu()">About</a></li>
+                <li><a href="#skills" onclick="toggleMobileMenu()">Skills</a></li>
+                <li><a href="#experience" onclick="toggleMobileMenu()">Experience</a></li>
+                <li><a href="#education" onclick="toggleMobileMenu()">Education</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div id="image-viewer">
+        <span class="close-viewer" onclick="closeImageViewer()">&times;</span>
+        <img id="full-image" src="" alt="Full Project Image">
+    </div>
+
+    <div id="cv-overlay" class="overlay">
+        <span class="close-overlay" onclick="closeOverlay('cv-overlay')"><i class="fas fa-times"></i> Close</span>
+        <div class="container cv-container">
+            <h2 style="color: var(--dark-blue); margin-bottom: 20px;">Curriculum Vitae</h2>
+            <img src="cv.png" alt="Aidatul Rosida CV" class="cv-image" onclick="viewImage(this.src)">
+        </div>
+    </div>
+
+    <div id="portfolio-overlay" class="overlay">
+        <span class="close-overlay" onclick="closeOverlay('portfolio-overlay')"><i class="fas fa-times"></i> Close</span>
+        <div class="container">
+            <h2 style="color: var(--dark-blue); text-align: center;">Project Showcase</h2>
+            <div class="overlay-grid">
+                <div class="overlay-card">
+                    <div class="card-img" onclick="viewImage('labify.jpg')">
+                        <img src="labify.jpg" alt="Labify">
+                    </div>
+                    <div class="card-body">
+                        <h4>LABIFY</h4>
+                        <div class="tech-stack">
+                            <span class="tag tag-dark">FIGMA</span>
+                            <span class="tag tag-dark">FLUTTER</span>
+                            <span class="tag tag-dark">FIREBASE</span>
+                        </div>
+                        <p>A laboratory equipment lending application designed to simplify and streamline borrowing lab tools.</p>
+                        <a href="https://bit.ly/49cuIzL" target="_blank" class="btn btn-primary btn-full"><i class="fab fa-figma"></i> View Prototype</a>
+                        <a href="https://github.com/dinalailil/pbl_peminjamanalatlab" target="_blank" class="btn btn-github btn-full" style="background:#333; color:white;"><i class="fab fa-github"></i> View Repository</a>
+                    </div>
+                </div>
+                <div class="overlay-card">
+                    <div class="card-img" onclick="viewImage('jtitracker.png')">
+                        <img src="jtitracker.png" alt="JTI Tracker">
+                    </div>
+                    <div class="card-body">
+                        <h4>JTI TRACKER</h4>
+                        <div class="tech-stack">
+                            <span class="tag tag-dark">WEB APP</span>
+                            <span class="tag tag-dark">PHP</span>
+                            <span class="tag tag-dark">MYSQL</span>
+                        </div>
+                        <p>Web-based application to track alumni and conduct satisfaction surveys for Politeknik Negeri Malang.</p>
+                        <a href="https://github.com/farelmaryamlailahajiri/tracker" target="_blank" class="btn btn-github btn-full" style="background:#333; color:white;"><i class="fab fa-github"></i> View Repository</a>
+                    </div>
+                </div>
+                <div class="overlay-card">
+                    <div class="card-img" onclick="viewImage('tatatertib.png')">
+                        <img src="tatatertib.png" alt="Student Discipline System">
+                    </div>
+                    <div class="card-body">
+                        <h4>STUDENT DISCIPLINE SYSTEM</h4>
+                        <div class="tech-stack">
+                            <span class="tag tag-dark">HTML</span>
+                            <span class="tag tag-dark">CSS</span>
+                            <span class="tag tag-dark">Java Script</span>
+                            <span class="tag tag-dark">PHP</span>
+                        </div>
+                        <p>Automating violation logging, point calculations, and compensation management with transparency.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="cert-overlay" class="overlay">
+        <span class="close-overlay" onclick="closeOverlay('cert-overlay')"><i class="fas fa-times"></i> Close</span>
+        <div class="container">
+            <h2 style="color: var(--dark-blue); text-align: center;">Certifications</h2>
+            <div class="overlay-grid">
+                <div class="overlay-card">
+                    <div class="card-img" onclick="viewImage('sertif1.png')"><img src="sertif1.png" alt="Techno Fair"></div>
+                    <div class="card-body">
+                        <h4>Webinar Techno Fair & Seminar 2024</h4>
+                        <p>Insights into the latest technology innovations and digital industry trends.</p>
+                        <a href="sertif1.PNG" target="_blank" class="btn btn-primary btn-full"><i class="fas fa-expand"></i> View Image</a>
+                    </div>
+                </div>
+                <div class="overlay-card">
+                    <div class="card-img" onclick="viewImage('sertif2.jpg')"><img src="sertif2.jpg" alt="LKMM"></div>
+                    <div class="card-body">
+                        <h4>Latihan Keterampilan Manajemen Mahasiswa 2023</h4>
+                        <p>Development of managerial skills and organizational leadership.</p>
+                        <a href="sertif2.jpg" target="_blank" class="btn btn-primary btn-full"><i class="fas fa-expand"></i> View Image</a>
+                    </div>
+                </div>
+                <div class="overlay-card">
+                    <div class="card-img" onclick="viewImage('sertif3.jpg')"><img src="sertif3.jpg" alt="Gramedia"></div>
+                    <div class="card-body">
+                        <h4>PKL - Gramedia Basuki Rahmat</h4>
+                        <a href="sertif3.jpg" target="_blank" class="btn btn-primary btn-full"><i class="fas fa-expand"></i> View Image</a>
+                    </div>
+                </div>
+                <div class="overlay-card">
+                    <div class="card-img" onclick="viewImage('sertif4.jpg')"><img src="sertif4.jpg" alt="Matahari"></div>
+                    <div class="card-body">
+                        <h4>PKL - Matahari Department Store</h4>
+                        <a href="sertif4.jpg" target="_blank" class="btn btn-primary btn-full"><i class="fas fa-expand"></i> View Image</a>
+                    </div>
+                </div>
+                <div class="overlay-card">
+                    <div class="card-img" onclick="viewImage('sertif5.jpg')"><img src="sertif5.jpg" alt="UKK"></div>
+                    <div class="card-body">
+                        <h4>Vocational Competency Certificate (UKK)</h4>
+                        <a href="sertif5.jpg" target="_blank" class="btn btn-primary btn-full"><i class="fas fa-expand"></i> View Image</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="hero">
+        <img src="fotoprofil.jpeg" alt="Aidatul Rosida" class="profile">
+        <h1>Hi, I'm Aidatul Rosida</h1>
+        <p>Business Information Systems Student at Politeknik Negeri Malang | Aspiring System Analyst & Developer</p>
+        
+        <div class="cta-buttons">
+            <button class="btn btn-primary" onclick="openOverlay('portfolio-overlay')">
+                <i class="fas fa-briefcase"></i> Portfolio
+            </button>
+            <button class="btn btn-outline" onclick="openOverlay('cv-overlay')">
+                <i class="fas fa-file-pdf"></i> View CV
+            </button>
+            <button class="btn btn-outline" onclick="openOverlay('cert-overlay')">
+                <i class="fas fa-award"></i> Certificates
+            </button>
+        </div>
+    </section>
+
+    <div class="container">
+        <section class="section" id="about">
+            <h2>About Me</h2>
+            <div class="card">
+                <p style="font-size: 1rem; color: #475569; text-align: justify; max-width: 900px; margin: auto;">
+                    I am a sixth-semester student of the D4 Business Information Systems program at Politeknik Negeri Malang. I am interested in system analysis, web development, and database management. I enjoy learning new technologies and building solutions that help improve business processes through information systems. My goal is to develop my skills and grow as a System Analyst in the technology field.
+                </p>
+            </div>
+        </section>
+
+        <section class="section" id="skills">
+            <h2>Expertise & Skills</h2>
+            <div class="skills-grid">
+                <div class="card">
+                    <h4 style="color: var(--dark-blue); font-size: 1rem;"><i class="fas fa-laptop-code" style="margin-right: 10px;"></i> Technical Expertise</h4>
+                    <div class="tag-container">
+                        <span class="tag">Laravel Framework</span>
+                        <span class="tag">Flutter & Dart</span>
+                        <span class="tag">MySQL & PostgreSQL</span>
+                        <span class="tag">Git & GitHub</span>
+                        <span class="tag">UI/UX (Figma)</span>
+                        <span class="tag">HTML, CSS, JS</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <h4 style="color: var(--dark-blue); font-size: 1rem;"><i class="fas fa-brain" style="margin-right: 10px;"></i> Core Competencies</h4>
+                    <div class="tag-container">
+                        <span class="tag">Communication</span>
+                        <span class="tag">Teamwork</span>
+                        <span class="tag">Problem Solving</span>
+                        <span class="tag">Time Management</span>
+                        <span class="tag">Adaptability</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="experience">
+            <h2>Work Experience</h2>
+            <div class="card">
+                <div class="exp-item">
+                    <h4>Sales Associate Intern</h4>
+                    <span class="exp-location">Gramedia Basuki Rahmat – Retail Operations & Data Accuracy</span>
+                    <ul>
+                        <li>Analyzed customer needs to provide suitable product recommendations.</li>
+                        <li>Maintained inventory data accuracy and conducted regular stock audits.</li>
+                    </ul>
+                </div>
+                <div class="exp-item" style="margin-bottom: 0;">
+                    <h4>Sales Associate Intern</h4>
+                    <span class="exp-location">Matahari Department Store – Process Management & Service</span>
+                    <ul>
+                        <li>Supported daily retail operations and stock management.</li>
+                        <li>Ensured service quality through effective customer communication.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="education">
+            <h2>Education</h2>
+            <div class="card">
+                <div style="margin-bottom: 25px;">
+                    <h4 style="color: var(--dark-blue); font-size: 1.1rem;">Politeknik Negeri Malang (2023 - Present)</h4>
+                    <p style="font-weight: 600; color: var(--primary); font-size: 0.95rem;">D4 Business Information Systems</p>
+                </div>
+                <div>
+                    <h4 style="color: var(--dark-blue); font-size: 1.1rem;">SMKN 1 Turen (2020 - 2023)</h4>
+                    <p style="font-weight: 600; color: var(--primary); font-size: 0.95rem;">Marketing Management</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="social">
+            <h2>Let's Get In Touch</h2>
+            <div class="social-icons">
+                <a href="https://github.com/aidatulrosida" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="mailto:rosidaaidatul@gmail.com"><i class="fas fa-envelope"></i></a>
+                <a href="https://wa.me/6285850671408" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                <a href="https://www.instagram.com/_aiidaap" target="_blank"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 Aidatul Rosida | Malang, Indonesia</p>
+    </footer>
+
+    <script>
+        function toggleMobileMenu(event) {
+            if (event) event.stopPropagation();
+            const links = document.getElementById('navLinks');
+            links.classList.toggle('active');
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.matches('.menu-dots') && !event.target.matches('.fa-ellipsis-v')) {
+                var dropdowns = document.getElementsByClassName("nav-links");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('active')) {
+                        openDropdown.classList.remove('active');
+                    }
+                }
+            }
+        }
+
+        function openOverlay(id) {
+            const overlay = document.getElementById(id);
+            overlay.style.display = 'block';
+            setTimeout(() => {
+                overlay.classList.add('active');
+            }, 10);
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeOverlay(id) {
+            const overlay = document.getElementById(id);
+            overlay.classList.remove('active');
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 300);
+            document.body.style.overflow = 'auto';
+        }
+
+        // NEW: Image Viewer Functions
+        function viewImage(src) {
+            const viewer = document.getElementById('image-viewer');
+            const fullImg = document.getElementById('full-image');
+            fullImg.src = src;
+            viewer.style.display = 'flex';
+        }
+
+        function closeImageViewer() {
+            document.getElementById('image-viewer').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
